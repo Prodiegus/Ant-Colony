@@ -11,22 +11,30 @@ package src;
  * and set a genoma to the new ant.
  */
 public class Ant {
-    private int[] genoma; // in this case the genoma will be the path that the ant has traveled
+    private int[] path; // in this case the genoma will be the path that the ant has traveled
+    private double pheromoneSense; // the power of the ant pheromone sense
     private int fitness; // the distance traveled by the ant
     private int pheromone; // the power of the ant pheromone
 
-    public Ant(int[] genoma, int pheromone){
-        this.genoma = genoma;
+    public Ant(int[] path, int pheromone, double pheromoneSense){
+        this.path = path;
         this.fitness = 0;
         this.pheromone = pheromone;
+        this.pheromoneSense = pheromoneSense;
+    }
+
+    public Ant(int pheromone, double pheromoneSense){
+        this.pheromone = pheromone;
+        this.pheromoneSense = pheromoneSense;
+        this.fitness = 0;
     }
 
     // we will calculate the distance traveled by the ant (fitness)
     public int calculateFitness(Graph graph){
         int distance = 0;
-        for(int i = 0; i < this.genoma.length-1; i+=2){
-            int node1ID = this.genoma[i];
-            int node2ID = this.genoma[i+1];
+        for(int i = 0; i < this.path.length-1; i+=2){
+            int node1ID = this.path[i];
+            int node2ID = this.path[i+1];
             Node node1 = graph.getNode(node1ID);
             Node node2 = graph.getNode(node2ID);
             int node1x = node1.getX();
@@ -39,15 +47,28 @@ public class Ant {
         return distance;
     }
 
-    public int getGenoma(){
+    public int getPath(){
         String genoma = "";
-        for(int i = 0; i < this.genoma.length; i++){
-            genoma += this.genoma[i];
+        for(int i = 0; i < this.path.length; i++){
+            genoma += this.path[i];
         }
         return Integer.parseInt(genoma);
     }
 
-    public int[] getSplitedGenoma(){
-        return this.genoma;
+    public int[] getSplitedPath(){
+        return this.path;
+    }
+
+    public int getFitness(Graph graph){
+        calculateFitness(graph); // we calculate the fitness of the ant (distance traveled
+        return this.fitness;
+    }
+
+    public int getPheromone(){
+        return this.pheromone;
+    }
+
+    public void setPath(int[] path){
+        this.path = path;
     }
 }
