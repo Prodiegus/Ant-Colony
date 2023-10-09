@@ -49,10 +49,11 @@ public class GraphMaker {
         // we create the graph
         this.graph = new Graph(this.size);
         // we add the nodes to the graph
-        for(int i = 6; i < data.size()-1; i++){
+        for(int i = 0; i < data.size()-1; i++){
             String[] node = data.get(i).trim().split("\s+");
             this.graph.addNode(Integer.parseInt(node[0]), Integer.parseInt(node[1]), Integer.parseInt(node[2]));
         }
+        //printGraph();
         return this.graph;
     }
 
@@ -61,6 +62,10 @@ public class GraphMaker {
         for (String string : data) {
             System.out.println(string);
         }
+    }
+
+    public void printGraph(){
+        System.out.println(this.graph.toString());
     }
     // getters
     public Graph getGraph(){

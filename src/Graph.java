@@ -21,8 +21,18 @@ public class Graph {
         return this.size;
     }
     public void unlockNodes(){
-        for(int i = 0; i < this.nodes.length; i++){
+        for(int i = 1; i < this.nodes.length; i++){
             this.nodes[i].unlock();
         }
+    }
+
+    @Override
+    public String toString() {
+        String graph = "";
+        for(int i = 1; i < this.nodes.length; i++){
+            if(this.nodes[i] != null) graph += this.nodes[i].toString()+"\n";
+            else graph += "Node "+i+" is null\n";
+        }
+        return graph;
     }
 }

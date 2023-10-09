@@ -31,4 +31,14 @@ public class Node {
     public int getY(){
         return this.y;
     }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "id=" + id +
+                ", x=" + x +
+                ", y=" + y +
+                ", unlocked=" + unlocked +
+                '}';
+    }
 }
