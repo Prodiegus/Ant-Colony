@@ -32,9 +32,10 @@ public class Ant {
     // we will calculate the distance traveled by the ant (fitness)
     public int calculateFitness(Graph graph){
         int distance = 0;
-        for(int i = 1; i < this.path.length-2; i+=2){
-            int node1ID = this.path[i];
-            int node2ID = this.path[i+1];
+        for(int i = 1; i < this.path.length-1; i++){
+            int node1ID = this.path[i-1];
+            int node2ID = this.path[i];
+            //System.out.println("node1ID: "+graph.getNode(node1ID)+"\nnode2ID: "+graph.getNode(node2ID));
             int node1x = graph.getNode(node1ID).getX();
             int node1y = graph.getNode(node1ID).getY();
             int node2x = graph.getNode(node2ID).getX();

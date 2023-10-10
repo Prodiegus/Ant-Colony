@@ -14,14 +14,17 @@ public class Graph {
     }
 
     public Node getNode(int id){
-        return this.nodes[id];
+        if(id>this.nodes.length-1) System.out.println("Node "+id+" is out of bounds"  );
+        Node node = this.nodes[id];
+        if(node == null) System.out.println("Node "+id+" is null");
+        return node;
     }
 
     public int getSize(){
         return this.size;
     }
     public void unlockNodes(){
-        for(int i = 1; i < this.nodes.length; i++){
+        for(int i = 1; i < this.nodes.length-1; i++){
             this.nodes[i].unlock();
         }
     }

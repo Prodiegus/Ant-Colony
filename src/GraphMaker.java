@@ -45,11 +45,11 @@ public class GraphMaker {
         }
         //printFile(data);
         // we get the size of the graph
-        this.size = data.size();
+        this.size = data.size()+1;
         // we create the graph
         this.graph = new Graph(this.size);
         // we add the nodes to the graph
-        for(int i = 0; i < data.size()-1; i++){
+        for(int i = 0; i < data.size(); i++){
             String[] node = data.get(i).trim().split("\s+");
             this.graph.addNode(Integer.parseInt(node[0]), Integer.parseInt(node[1]), Integer.parseInt(node[2]));
         }
