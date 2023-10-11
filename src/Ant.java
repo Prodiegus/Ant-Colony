@@ -19,11 +19,15 @@ public class Ant {
     private int[] path; 
     private int distance; // distance traveled
     private double Q; // pheromone left
+    private Random random; // random number generator
 
     public Ant(int nodesNumber, double Q) {
         this.nodesNumber = nodesNumber;
         this.Q = Q;
         this.path = new int[this.nodesNumber-1];
+        // we will use the time in seconds as a seed for the random number generator
+        int seed = (int)System.currentTimeMillis();
+        this.random = new Random(seed);
     }
 
     // we will calculate the distance traveled by the ant (fitness)
@@ -32,6 +36,7 @@ public class Ant {
         for(int i = 0; i < this.path.length-1; i++){
             this.distance += distanceMap[this.path[i]][this.path[i+1]];
         }
+        this.distance += distanceMap[this.path[this.path.length-1]][this.path[0]];
         return this.distance;
     }
 
@@ -51,7 +56,6 @@ public class Ant {
      */
     public void runAnt(double[][] pheromoneMap, double[][] distanceMap, double alpha, double beta){
         // we set the first node as a random node
-        Random random = new Random();
         ArrayList<Double> probability;
         int startNode = random.nextInt(this.nodesNumber-1)+1;
         this.path[0] = startNode;
