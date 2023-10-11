@@ -89,7 +89,9 @@ public class ACO {
             for(int j = 0; j < this.antsNumber; j++){
                 this.pheromoneMap = this.ants[j].updatePheromone(this.pheromoneMap);
             }
-            
+            for (int j = 0; j < ants.length; j++) {
+                this.setBestAnt(this.ants[j]);
+            }
         }
     }
     
