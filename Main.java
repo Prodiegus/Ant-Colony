@@ -1,5 +1,7 @@
 // Author: Diego Fernandez
 
+import java.util.ArrayList;
+
 import src.*;
 
 public class Main {
@@ -13,7 +15,7 @@ public class Main {
         // we take from the command line the number of ants (-ant <Integer>), the times we will run the ACO (-times <integer>) and the name of file (-file name.tsp) in the graph
         int ants = 5; // default number of ants
         int times = 5000; // default number of times we will run the ACO
-        Graph graph;
+        double[][] distanceMap; // distance map
         String file = "TSP/"; // file folder from src
         /**
          * We will take the arguments from the command line
@@ -83,19 +85,19 @@ public class Main {
         }
         
         // we create the graph
-        GraphMaker graphMaker = new GraphMaker();
+        FileParser graphMaker = new FileParser();
         System.out.println("Creating graph...");
-        graph = graphMaker.makeGraph(file);
+        distanceMap = graphMaker.parse(file);
         //System.out.println("Graph created!");
         // we create the ACO
-        ACO aco = new ACO(graph, ants, graph.getSize());
+        ACO aco = new ACO(ants, distanceMap);
         // we run the ACO
         System.out.println("Running ACO...");
-        Ant bestAnt = aco.run(times);
-        //System.out.println("ACO finished!");
+        aco.runACO(times);
+        System.out.println("ACO finished!");
         // we show the best ant
         System.out.println("The best ant is:");
-        aco.showAnt(bestAnt, graph);
+        aco.showBestAnt();
     }
         
 }

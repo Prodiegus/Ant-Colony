@@ -1,4 +1,8 @@
 package src;
+
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.Arrays;
 /**
  * This class will represent an ant that will travel through the graph
  * and will save the path that it has traveled
@@ -11,39 +15,137 @@ package src;
  * and set a genoma to the new ant.
  */
 public class Ant {
-    private int[] path; // in this case the genoma will be the path that the ant has traveled
-    private double pheromoneSense; // the power of the ant pheromone sense
-    private int fitness; // the distance traveled by the ant
-    private double pheromone; // the power of the ant pheromone
+    private int nodesNumber; // number of nodes
+    private int[] path; 
+    private int distance; // distance traveled
+    private double Q; // pheromone left
 
-    public Ant(int[] path, double pheromone, double pheromoneSense){
-        this.path = path;
-        this.fitness = 0;
-        this.pheromone = pheromone;
-        this.pheromoneSense = pheromoneSense;
-    }
-
-    public Ant(double pheromone, double pheromoneSense){
-        this.pheromone = pheromone;
-        this.pheromoneSense = pheromoneSense;
-        this.fitness = 0;
+    public Ant(int nodesNumber, double Q) {
+        this.nodesNumber = nodesNumber;
+        this.Q = Q;
+        this.path = new int[this.nodesNumber+1];
     }
 
     // we will calculate the distance traveled by the ant (fitness)
-    public int calculateFitness(Graph graph){
-        int distance = 0;
-        for(int i = 1; i < this.path.length-1; i++){
-            int node1ID = this.path[i-1];
-            int node2ID = this.path[i];
-            //System.out.println("node1ID: "+graph.getNode(node1ID)+"\nnode2ID: "+graph.getNode(node2ID));
-            int node1x = graph.getNode(node1ID).getX();
-            int node1y = graph.getNode(node1ID).getY();
-            int node2x = graph.getNode(node2ID).getX();
-            int node2y = graph.getNode(node2ID).getY();
-            distance += Math.sqrt(Math.pow(node2x-node1x, 2)+Math.pow(node2y-node1y, 2));
+    public int calculateDistance(double[][] distanceMap){
+        this.distance = 0;
+        for(int i = 0; i < this.path.length; i++){
+            this.distance += distanceMap[this.path[i]][this.path[i+1]];
         }
-        this.fitness = distance;
-        return distance;
+        return this.distance;
+    }
+
+    private void initPath(){
+        for(int i = 0; i < this.path.length; i++){
+            this.path[i] = 0;
+        }
+    }
+
+    /**
+     * now in the ant we are going to create a method to move the ant ant
+     * with that build a path and calculate the distance traveled
+     * @param pheromoneMap
+     * @param distanceMap
+     * @param alpha
+     * @param beta
+     */
+    public void runAnt(double[][] pheromoneMap, double[][] distanceMap, double alpha, double beta){
+        // we set the first node as a random node
+        Random random = new Random();
+        ArrayList<Double> probability;
+        int startNode = random.nextInt(this.nodesNumber)+1;
+        this.path[0] = startNode;
+        System.out.println("Start node: "+startNode);
+        ArrayList<Integer> posibleNext = new ArrayList<>();
+        // at the start we will have all the nodes as posible next less the start node
+        for(int i = 1; i < this.nodesNumber; i++){
+            if(i != startNode){
+                posibleNext.add(i);
+            }
+        }
+        int nextNode = 0;
+        double[][] visibilityMap = new double[this.nodesNumber][this.nodesNumber];
+        double sum = 0;
+        double randomValue = random.nextInt(100);
+        for(int node = 1; node < this.nodesNumber; node++){
+            // we will create a visibility map    
+            for(int i = 0; i < this.nodesNumber; i++){
+                for(int j = 0; j < this.nodesNumber; j++){
+                    if(i != j){
+                        visibilityMap[i][j] = 1/distanceMap[i][j];
+                    }else{
+                        visibilityMap[i][j] = 0;
+                    }
+                }
+            }
+            /**
+             * For this part we need to use a formula to calculate the probability
+             * of the ant to move to the next node
+             */
+            probability = new ArrayList<>();
+            sum = 0;
+            for(int i = 1; i < posibleNext.size(); i++){
+                if(i != path[node-1]){
+                    sum += Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta);
+                }
+            }
+
+            // we are going to show the probabilities
+            System.out.println("Probabilities: ");
+            for(int i = 0; i < posibleNext.size(); i++){
+                if(i != path[node-1] && i != 0){
+                    System.out.println("Probability from "+path[node-1]+" to "+posibleNext.get(i)+" is: "+(Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
+                }
+            }
+            // we calculate the probability
+            for(int i = 0; i < posibleNext.size(); i++){
+                if(i != path[node-1] && i != 0){
+                    if(probability.get(i) == null){
+                        probability.add((Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
+                    }else{
+                        probability.add(probability.get(i-1)+(Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
+                    }
+                    
+                }
+            }
+
+            // we will generate a random number between 0 and 100
+            randomValue = random.nextInt(100);
+            randomValue /= 100; // for transforming the random value to a value between 0 and 1
+            // we are going to look on the probability array for the value of the first index greater than the random value
+            System.out.println("Posible nodes in probability: "+probability.size());
+            for (int i = 1; i < probability.size(); i++) {
+                if(probability.get(i) > randomValue){
+                    nextNode = i;
+                    break;
+                }
+            }
+            
+            // we set the next node
+            this.path[node] = posibleNext.get(nextNode);
+            posibleNext.remove(nextNode);
+            probability.clear();
+            probability = null;
+        }
+        // we calculate the distance traveled
+        calculateDistance(distanceMap);
+    }
+
+    private void showArray(double[][] array){
+        for(int i = 0; i < array.length; i++){
+            for(int j = 0; j < array[i].length; j++){
+                System.out.println("from "+i+" to "+j+" : "+array[i][j]);
+            }
+            System.out.println();
+        }
+    }
+    // we will update the pheromone of the path traveled by the ant
+    public double[][] updatePheromone(double[][] pheromoneMap){
+        // we will update the pheromone map with the pheromone left by the ant in the path
+        for(int i = 0; i < this.path.length-1; i++){
+            pheromoneMap[this.path[i]][this.path[i+1]] += (this.Q/this.distance);
+        }
+        return pheromoneMap;
     }
 
     public int getPath(){
@@ -58,20 +160,13 @@ public class Ant {
         return this.path;
     }
 
-    public int getFitness(Graph graph){
-        calculateFitness(graph); // we calculate the fitness of the ant (distance traveled
-        return this.fitness;
+    public int getDistance(double[][] distanceMap){
+        calculateDistance(distanceMap); // we calculate the fitness of the ant (distance traveled
+        return this.distance;
     }
 
-    public double getPheromone(){
-        return this.pheromone;
-    }
-
-    public void setPheromoneSense(double pheromoneSense) {
-        this.pheromoneSense = pheromoneSense;
-    }
-    public double getPheromoneSense() {
-        return pheromoneSense;
+    public double getQ(){
+        return this.Q;
     }
 
     public void setPath(int[] path){
@@ -82,9 +177,7 @@ public class Ant {
     public String toString(){
         String string = "";
         string += "Ant data:\n";
-        string += "Distance traveled: "+this.fitness+"\n";
-        string += "Pheromone: "+this.pheromone+"\n";
-        string += "Pheromone sense: "+this.pheromoneSense+"\n";
+        string += "Distance traveled: "+this.distance+"\n";
         string += "Path: ";
         for(int i = 0; i < this.path.length-1; i++){
             string += this.path[i]+"->";
