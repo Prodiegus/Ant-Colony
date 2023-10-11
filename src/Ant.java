@@ -29,7 +29,7 @@ public class Ant {
     // we will calculate the distance traveled by the ant (fitness)
     public int calculateDistance(double[][] distanceMap){
         this.distance = 0;
-        for(int i = 0; i < this.path.length; i++){
+        for(int i = 0; i < this.path.length-1; i++){
             this.distance += distanceMap[this.path[i]][this.path[i+1]];
         }
         return this.distance;
@@ -55,7 +55,7 @@ public class Ant {
         ArrayList<Double> probability;
         int startNode = random.nextInt(this.nodesNumber-1)+1;
         this.path[0] = startNode;
-        System.out.println("Start node: "+startNode);
+        //System.out.println("Start node: "+startNode);
         ArrayList<Integer> posibleNext = new ArrayList<>();
         for(int i = 1; i < this.nodesNumber; i++){
                 if(i != startNode){
@@ -95,7 +95,7 @@ public class Ant {
             }
 
             // we are going to show the probabilities
-            System.out.println("Probabilities: ");
+            //System.out.println("Probabilities: ");
             for(int i = 0; i < posibleNext.size(); i++){
                 if(i != path[node-1]){
                     // we add the probability to the arraylist
@@ -109,17 +109,11 @@ public class Ant {
                 probability.set(i, probability.get(i)+probability.get(i-1));
                 //System.out.println("Probability acumulated: "+probability.get(i));
             }
-            // we show the path
-            System.out.println("Path: "+path.length);
-            for(int i = 0; i < path.length-1; i++){
-                System.out.print(path[i]+"->");
-            }
-            System.out.println(path[path.length-1]);
+            //System.out.println(path[path.length-1]);
             // we will generate a random number between 0 and 100
             randomValue = random.nextInt(100);
             randomValue /= 100; // for transforming the random value to a value between 0 and 1
             // we are going to look on the probability array for the value of the first index greater than the random value
-            System.out.println("Posible nodes in probability: "+probability.size());
             for (int i = 1; i < probability.size(); i++) {
                 if(probability.get(i) > randomValue){
                     nextNode = i;
@@ -128,7 +122,6 @@ public class Ant {
             }
             
             // we set the next node
-            System.out.println("Next node: "+posibleNext.get(nextNode-1));
             this.path[node] = posibleNext.get(nextNode-1);
             posibleNext.remove(nextNode-1);
             probability.clear();
