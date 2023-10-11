@@ -81,14 +81,10 @@ public class ACO {
                 ant.runAnt(this.pheromoneMap, this.distanceMap, this.alpha, this.beta);
                 this.ants[j] = ant;
                 this.setBestAnt(this.ants[j]);
+                //System.out.println("Ant "+j+" distance: "+this.ants[j].getDistance(this.distanceMap));
             }
             // we update the pheromone map here
             this.updatePheroMap();
-
-            // We get the pheromone left by the ants
-            for(int j = 0; j < this.antsNumber; j++){
-                this.pheromoneMap = this.ants[j].updatePheromone(this.pheromoneMap);
-            }
             
         }
     }
