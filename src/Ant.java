@@ -23,7 +23,7 @@ public class Ant {
     public Ant(int nodesNumber, double Q) {
         this.nodesNumber = nodesNumber;
         this.Q = Q;
-        this.path = new int[this.nodesNumber+1];
+        this.path = new int[this.nodesNumber-1];
     }
 
     // we will calculate the distance traveled by the ant (fitness)
@@ -53,21 +53,23 @@ public class Ant {
         // we set the first node as a random node
         Random random = new Random();
         ArrayList<Double> probability;
-        int startNode = random.nextInt(this.nodesNumber)+1;
+        int startNode = random.nextInt(this.nodesNumber-1)+1;
         this.path[0] = startNode;
         System.out.println("Start node: "+startNode);
         ArrayList<Integer> posibleNext = new ArrayList<>();
-        // at the start we will have all the nodes as posible next less the start node
         for(int i = 1; i < this.nodesNumber; i++){
-            if(i != startNode){
-                posibleNext.add(i);
+                if(i != startNode){
+                    posibleNext.add(i);
+                }
             }
-        }
         int nextNode = 0;
         double[][] visibilityMap = new double[this.nodesNumber][this.nodesNumber];
         double sum = 0;
         double randomValue = random.nextInt(100);
         for(int node = 1; node < this.nodesNumber; node++){
+            if(posibleNext.size() < 1){
+                break;
+            }
             // we will create a visibility map    
             for(int i = 0; i < this.nodesNumber; i++){
                 for(int j = 0; j < this.nodesNumber; j++){
@@ -78,37 +80,41 @@ public class Ant {
                     }
                 }
             }
+
+            
             /**
              * For this part we need to use a formula to calculate the probability
              * of the ant to move to the next node
              */
             probability = new ArrayList<>();
             sum = 0;
-            for(int i = 1; i < posibleNext.size(); i++){
+            for(int i = 0; i < posibleNext.size(); i++){
                 if(i != path[node-1]){
-                    sum += Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta);
+                    sum += Math.pow(pheromoneMap[path[node-1]][i+1], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta);
                 }
             }
 
             // we are going to show the probabilities
             System.out.println("Probabilities: ");
             for(int i = 0; i < posibleNext.size(); i++){
-                if(i != path[node-1] && i != 0){
-                    System.out.println("Probability from "+path[node-1]+" to "+posibleNext.get(i)+" is: "+(Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
-                }
-            }
-            // we calculate the probability
-            for(int i = 0; i < posibleNext.size(); i++){
-                if(i != path[node-1] && i != 0){
-                    if(probability.get(i) == null){
-                        probability.add((Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
-                    }else{
-                        probability.add(probability.get(i-1)+(Math.pow(pheromoneMap[path[node-1]][i], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
-                    }
-                    
+                if(i != path[node-1]){
+                    // we add the probability to the arraylist
+                    probability.add((Math.pow(pheromoneMap[path[node-1]][i+1], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
+                    //System.out.println("Probability from "+path[node-1]+" to "+posibleNext.get(i)+" is: "+(Math.pow(pheromoneMap[path[node-1]][i+1], alpha)*Math.pow(visibilityMap[path[node-1]][posibleNext.get(i)], beta))/sum);
                 }
             }
 
+            // now we acumulate the probabilities in the arraylist
+            for(int i = 1; i < probability.size(); i++){
+                probability.set(i, probability.get(i)+probability.get(i-1));
+                //System.out.println("Probability acumulated: "+probability.get(i));
+            }
+            // we show the path
+            System.out.println("Path: "+path.length);
+            for(int i = 0; i < path.length-1; i++){
+                System.out.print(path[i]+"->");
+            }
+            System.out.println(path[path.length-1]);
             // we will generate a random number between 0 and 100
             randomValue = random.nextInt(100);
             randomValue /= 100; // for transforming the random value to a value between 0 and 1
@@ -122,8 +128,9 @@ public class Ant {
             }
             
             // we set the next node
-            this.path[node] = posibleNext.get(nextNode);
-            posibleNext.remove(nextNode);
+            System.out.println("Next node: "+posibleNext.get(nextNode-1));
+            this.path[node] = posibleNext.get(nextNode-1);
+            posibleNext.remove(nextNode-1);
             probability.clear();
             probability = null;
         }
