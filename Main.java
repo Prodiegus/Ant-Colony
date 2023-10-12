@@ -15,6 +15,10 @@ public class Main {
         // we take from the command line the number of ants (-ant <Integer>), the times we will run the ACO (-times <integer>) and the name of file (-file name.tsp) in the graph
         int ants = 5; // default number of ants
         int times = 5000; // default number of times we will run the ACO
+        double alpha = 1.0; // default alpha value used in the formula
+        double beta = 1.0; // default beta value used in the formula
+        double evaporationRate = 0.01; // default evaporation rate used for evaporation
+        double Q = 1.0; // default learning rate used in the formul
         double[][] distanceMap; // distance map
         String file = "TSP/"; // file folder from src
         /**
@@ -22,6 +26,10 @@ public class Main {
          * -ant <integer> will be the number of ants
          * -times <integer> will be the number of times we will run the ACO
          * -file <name.tsp> will be the name of the file in the folder TSP
+         * -alpha <double> will be the alpha value used in the formula
+         * -beta <double> will be the beta value used in the formula
+         * -evaporation <double> will be the evaporation rate used for evaporation
+         * -Q <double> will be the learning rate used in the formula
          * -help will show the help
          *  We will validate the arguments make sure that the number of ants and times are integers
          * If the arguments are not valid we will show the help and exit the program and if we dont have arguments we will show the help and exit the program
@@ -66,11 +74,64 @@ public class Main {
                         System.exit(0);
                     }
                 }
+                if(args[i].equals("-alpha")){
+                    try{
+                        alpha = Double.parseDouble(args[i+1]);
+                        if(alpha < 0){
+                            System.out.println("The alpha value must be greater than 0");
+                            System.exit(0);
+                        }
+                    }catch(Exception e){
+                        System.out.println("The alpha value must be a double");
+                        System.exit(0);
+                    }
+                }
+                if(args[i].equals("-beta")){
+                    try{
+                        beta = Double.parseDouble(args[i+1]);
+                        if(beta < 0){
+                            System.out.println("The beta value must be greater than 0");
+                            System.exit(0);
+                        }
+                    }catch(Exception e){
+                        System.out.println("The beta value must be a double");
+                        System.exit(0);
+                    }
+                }
+                if(args[i].equals("-evaporation")){
+                    try{
+                        evaporationRate = Double.parseDouble(args[i+1]);
+                        if(evaporationRate < 0){
+                            System.out.println("The evaporation rate must be greater than 0");
+                            System.exit(0);
+                        }
+                    }catch(Exception e){
+                        System.out.println("The evaporation rate must be a double");
+                        System.exit(0);
+                    }
+                }
+                if(args[i].equals("-Q")){
+                    try{
+                        Q = Double.parseDouble(args[i+1]);
+                        if(Q < 0){
+                            System.out.println("The learning rate must be greater than 0");
+                            System.exit(0);
+                        }
+                    }catch(Exception e){
+                        System.out.println("The learning rate must be a double");
+                        System.exit(0);
+                    }
+                }
                 if(args[i].equals("-help")){
                     System.out.println("The arguments are:");
                     System.out.println("-ant <integer> will be the number of ants");
                     System.out.println("-times <integer> will be the number of times we will run the ACO");
                     System.out.println("-file <name.tsp> will be the name of the file in the folder TSP");
+                    System.out.println("-alpha <double> will be the alpha value used in the formula");
+                    System.out.println("-beta <double> will be the beta value used in the formula");
+                    System.out.println("-evaporation <double> will be the evaporation rate used for evaporation");
+                    System.out.println("-Q <double> will be the learning rate used in the formula");
+                    System.out.println("default values are: -ant"+ants+" -times "+times+" -file "+file+" -alpha "+alpha+" -beta "+beta+" -evaporation "+evaporationRate+" -Q "+Q);
                     System.out.println("-help will show the help");
                     System.exit(0);
                 }
@@ -80,6 +141,11 @@ public class Main {
             System.out.println("-ant <integer> will be the number of ants");
             System.out.println("-times <integer> will be the number of times we will run the ACO");
             System.out.println("-file <name.tsp> will be the name of the file in the folder TSP");
+            System.out.println("-alpha <double> will be the alpha value used in the formula");
+            System.out.println("-beta <double> will be the beta value used in the formula");
+            System.out.println("-evaporation <double> will be the evaporation rate used for evaporation");
+            System.out.println("-Q <double> will be the learning rate used in the formula");
+            System.out.println("default values are: -ant"+ants+" -times "+times+" -file "+file+" -alpha "+alpha+" -beta "+beta+" -evaporation "+evaporationRate+" -Q "+Q);
             System.out.println("-help will show the help");
             System.exit(0);
         }
@@ -90,7 +156,7 @@ public class Main {
         distanceMap = graphMaker.parse(file);
         //System.out.println("Graph created!");
         // we create the ACO
-        ACO aco = new ACO(ants, distanceMap);
+        ACO aco = new ACO(ants, distanceMap, alpha, beta, evaporationRate, Q);
         // we run the ACO
         System.out.println("Running ACO...");
         aco.runACO(times);

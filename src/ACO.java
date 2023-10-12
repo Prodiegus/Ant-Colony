@@ -16,15 +16,17 @@ public class ACO {
     private double alpha; // alpha value used in the formula
     private double beta; // beta value used in the formula
     private double evaporationRate; // evaporation rate used for evaporation
-    public ACO(int antsNumber, double[][] distanceMap) {
+    private double Q; // learning rate used in the formula
+    public ACO(int antsNumber, double[][] distanceMap, double alpha, double beta, double evaporationRate, double Q) {
         this.antsNumber = antsNumber;
         this.distanceMap = distanceMap;
         this.nodesNumber = distanceMap.length;
         this.pheromoneMap = new double[this.nodesNumber][this.nodesNumber];
         this.ants = new Ant[this.antsNumber];
-        this.alpha = 1.0;
-        this.beta = 1.0;
-        this.evaporationRate = 0.01;
+        this.alpha = alpha;
+        this.beta = beta;
+        this.evaporationRate = evaporationRate;
+        this.Q = Q;
         this.initPheromoneMap();
 
     }
@@ -60,7 +62,9 @@ public class ACO {
             }
         }
     }
-
+    public Ant getBestAnt(){
+        return this.besAnt;
+    }
     public void showBestAnt(){
         System.out.println(this.besAnt);
     }
@@ -74,10 +78,21 @@ public class ACO {
     }
     
     public void runACO(int times){
+        // we will give a mesage of progress to the user evry 2 seconds of the program
+        long startTime2 = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
+        long currentTime = System.currentTimeMillis();
+        int updateMargin = 100;
         for(int i = 0; i < times; i++){
+            currentTime = System.currentTimeMillis();
+            //System.out.println("time: "+(currentTime - startTime)+" updateMargin: "+updateMargin+" currentTime - startTime % updateMargin: "+(currentTime - startTime % updateMargin)+" currentTime - startTime: "+(currentTime - startTime)+" updateMargin: "+updateMargin+" currentTime - startTime > updateMargin: "+(currentTime - startTime > updateMargin));
+            if((currentTime - startTime) % updateMargin==0 && currentTime - startTime > updateMargin){
+                System.out.println("Progress "+((((double)i)/((double)times))*(double)(100))+"%"+": "+i+"/"+times);
+                startTime = currentTime;
+            }
             // we will create the ants
             for(int j = 0; j < this.antsNumber; j++){
-                Ant ant = new Ant(this.nodesNumber, 1);
+                Ant ant = new Ant(this.nodesNumber, this.Q, j+i, i);
                 ant.runAnt(this.pheromoneMap, this.distanceMap, this.alpha, this.beta);
                 this.ants[j] = ant;
                 this.setBestAnt(this.ants[j]);
@@ -87,6 +102,9 @@ public class ACO {
             this.updatePheroMap();
             
         }
+        double finalTime = (double)(System.currentTimeMillis() - startTime2)/1000;
+        System.out.println("Time: "+finalTime+" seconds");
+        
     }
     
 }

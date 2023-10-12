@@ -2,7 +2,6 @@ package src;
 
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Arrays;
 /**
  * This class will represent an ant that will travel through the graph
  * and will save the path that it has traveled
@@ -16,14 +15,18 @@ import java.util.Arrays;
  */
 public class Ant {
     private int nodesNumber; // number of nodes
+    private int id; // id of the ant
+    private int loop; // number of loops
     private int[] path; 
     private int distance; // distance traveled
     private double Q; // pheromone left
     private Random random; // random number generator
 
-    public Ant(int nodesNumber, double Q) {
+    public Ant(int nodesNumber, double Q, int id, int loop) {
         this.nodesNumber = nodesNumber;
         this.Q = Q;
+        this.id = id;
+        this.loop = loop;
         this.path = new int[this.nodesNumber-1];
         // we will use the time in seconds as a seed for the random number generator
         int seed = (int)System.currentTimeMillis();
@@ -118,16 +121,15 @@ public class Ant {
             randomValue = random.nextInt(100);
             randomValue /= 100; // for transforming the random value to a value between 0 and 1
             // we are going to look on the probability array for the value of the first index greater than the random value
-            for (int i = 1; i < probability.size(); i++) {
+            //nextNode = 0;
+            for (int i = 0; probability.get(i) <= randomValue; i++) {
                 if(probability.get(i) > randomValue){
                     nextNode = i;
-                    break;
                 }
             }
-            
-            // we set the next node
-            this.path[node] = posibleNext.get(nextNode-1);
-            posibleNext.remove(nextNode-1);
+
+            this.path[node] = posibleNext.get(nextNode);
+            posibleNext.remove(nextNode);
             probability.clear();
             probability = null;
         }
@@ -180,7 +182,9 @@ public class Ant {
     @Override
     public String toString(){
         String string = "";
-        string += "Ant data:\n";
+        string += "Ant: "+this.id+"\n";
+        string += "Loop: "+this.loop+"\n";
+        string += "Q: "+this.Q+"\n";
         string += "Distance traveled: "+this.distance+"\n";
         string += "Path: ";
         for(int i = 0; i < this.path.length-1; i++){
