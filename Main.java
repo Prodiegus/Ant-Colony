@@ -14,7 +14,7 @@ public class Main {
     public static void main(String[] args) {
         // we take from the command line the number of ants (-ant <Integer>), the times we will run the ACO (-times <integer>) and the name of file (-file name.tsp) in the graph
         int ants = 5; // default number of ants
-        int times = 5000; // default number of times we will run the ACO
+        int times = 10; // default number of times we will run the ACO
         double alpha = 1.0; // default alpha value used in the formula
         double beta = 1.0; // default beta value used in the formula
         double evaporationRate = 0.01; // default evaporation rate used for evaporation
