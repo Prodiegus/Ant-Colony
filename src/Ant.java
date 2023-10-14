@@ -121,8 +121,8 @@ public class Ant {
             randomValue = random.nextInt(100);
             randomValue /= 100; // for transforming the random value to a value between 0 and 1
             // we are going to look on the probability array for the value of the first index greater than the random value
-            //nextNode = 0;
-            for (int i = 0; probability.get(i) <= randomValue; i++) {
+            nextNode = 0;
+            for (int i = 0; i < probability.size(); i++) {
                 if(probability.get(i) > randomValue){
                     nextNode = i;
                 }

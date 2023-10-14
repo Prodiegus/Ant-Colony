@@ -82,12 +82,19 @@ public class ACO {
         long startTime2 = System.currentTimeMillis();
         long startTime = System.currentTimeMillis();
         long currentTime = System.currentTimeMillis();
-        int updateMargin = 100;
+        int roundedTime = 0;
+        int roundedPercent = 0;
+        int updateMargin = 2;
+        int totalAnts = antsNumber*times;
         for(int i = 0; i < times; i++){
             currentTime = System.currentTimeMillis();
             //System.out.println("time: "+(currentTime - startTime)+" updateMargin: "+updateMargin+" currentTime - startTime % updateMargin: "+(currentTime - startTime % updateMargin)+" currentTime - startTime: "+(currentTime - startTime)+" updateMargin: "+updateMargin+" currentTime - startTime > updateMargin: "+(currentTime - startTime > updateMargin));
-            if((currentTime - startTime) % updateMargin==0 && currentTime - startTime > updateMargin){
-                System.out.println("Progress "+((((double)i)/((double)times))*(double)(100))+"%"+": "+i+"/"+times);
+            if(((currentTime - startTime)) % updateMargin==0 && currentTime - startTime > updateMargin){
+                // we will calculate the rounded time
+                roundedTime = (int) Math.round((double)(currentTime - startTime2)/1000);
+                // we will calculate the rounded percent to the second decimal
+                roundedPercent = (int) Math.round((((double)i)/((double)times))*(double)(10000))/100;
+                System.out.println("Progress "+roundedPercent+"%"+": "+i+"/"+times+" Time: "+roundedTime+" seconds");
                 startTime = currentTime;
             }
             // we will create the ants
@@ -97,13 +104,25 @@ public class ACO {
                 this.ants[j] = ant;
                 this.setBestAnt(this.ants[j]);
                 //System.out.println("Ant "+j+" distance: "+this.ants[j].getDistance(this.distanceMap));
+                if(((currentTime - startTime)) % updateMargin==0 && currentTime - startTime > updateMargin){
+                    roundedTime = (int) Math.round((double)(currentTime - startTime2)/1000);
+                    roundedPercent = (int) Math.round((((double)i)/((double)times))*(double)(10000))/100;
+                    System.out.println("Progress "+roundedPercent+"%"+": "+i+"/"+times+" Ant "+(j+i)+"/"+totalAnts+ " Time: "+roundedTime+" seconds");
+                    startTime = currentTime;
+                }
             }
             // we update the pheromone map here
             this.updatePheroMap();
             
         }
         double finalTime = (double)(System.currentTimeMillis() - startTime2)/1000;
-        System.out.println("Time: "+finalTime+" seconds");
+        if(finalTime < 60){
+            System.out.println("Time: "+finalTime+" seconds");
+        }else if(finalTime < 3600){
+            System.out.println("Time: "+(finalTime/60)+" minutes");
+        }else{
+            System.out.println("Time: "+(finalTime/3600)+" hours");
+        }
         
     }
     
